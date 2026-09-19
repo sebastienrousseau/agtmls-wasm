@@ -1,0 +1,64 @@
+# SPDX-FileCopyrightText: 2026 Sebastien Rousseau
+# SPDX-License-Identifier: MIT OR Apache-2.0
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: build, lint and size budget
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: sebastienrousseau/agtmls-spec
+          path: .spec
+      - uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772 # master
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
+      - uses: jetli/wasm-pack-action@0d096b08b4e5a7de8c28de67e11e945404e9eefa # v0.4.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+
+      - run: cargo fmt --all --check
+      - env:
+          AGTMLS_SPEC: ${{ github.workspace }}/.spec
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Build
+        env:
+          AGTMLS_SPEC: ${{ github.workspace }}/.spec
+        run: |
+          wasm-pack build --target web    --release --out-dir pkg
+          wasm-pack build --target nodejs --release --out-dir pkg-node
+
+      # A module with no rules reports zero findings, which looks exactly like
+      # a clean input. Prove it is armed and that it still detects, rather than
+      # only that it builds.
+      - name: Behaviour
+        run: node scripts/smoke.mjs
+
+      # Growth here is silent: the module still works, it just costs every
+      # browser that loads it a little more each release.
+      - name: Size budget
+        run: |
+          BYTES=$(gzip -c pkg/agtmls_wasm_bg.wasm | wc -c)
+          LIMIT=$((500 * 1024))
+          echo "gzipped: $((BYTES / 1024)) KB / $((LIMIT / 1024)) KB"
+          test "$BYTES" -le "$LIMIT"

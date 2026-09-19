@@ -1,0 +1,49 @@
+# SPDX-FileCopyrightText: 2026 Sebastien Rousseau
+# SPDX-License-Identifier: MIT OR Apache-2.0
+
+[package]
+name = "agtmls-wasm"
+version = "0.0.1"
+edition = "2024"
+rust-version = "1.86.0"
+license = "MIT OR Apache-2.0"
+description = "WebAssembly bindings for the AgtMLS engine: audit agent skills in a browser, with nothing leaving the page"
+repository = "https://github.com/sebastienrousseau/agtmls-wasm"
+homepage = "https://github.com/sebastienrousseau/agtmls-wasm"
+readme = "README.md"
+keywords = ["wasm", "agent", "skills", "security", "audit"]
+categories = ["wasm", "development-tools"]
+authors = ["Sebastien Rousseau <sebastian.rousseau@gmail.com>"]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+# Pinned by revision, not by branch: a branch dependency is not reproducible,
+# and this crate's whole claim is that the module you run is the one the
+# specification describes. Switches to a crates.io version pin once
+# agtmls-core is published.
+agtmls-core = { git = "https://github.com/sebastienrousseau/agtmls-core", rev = "181d3189d817b224907cba65e65753f7fbfc30e5" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+wasm-bindgen = "0.2"
+serde-wasm-bindgen = "0.6"
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3"
+
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+
+# wasm-opt -Oz plus LTO and a single codegen unit: the size budget is 500 KB
+# gzipped and the analyzer is mostly regex, which is not small.
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

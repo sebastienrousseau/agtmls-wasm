@@ -1,0 +1,101 @@
+# SPDX-FileCopyrightText: 2026 Sebastien Rousseau
+# SPDX-License-Identifier: MIT OR Apache-2.0
+name: release
+
+on:
+  push:
+    tags: ["v0.0.*"]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Build and validate without publishing"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: verify before publishing
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: sebastienrousseau/agtmls-spec
+          path: .spec
+      - uses: dtolnay/rust-toolchain@6c977a6ca4077a0ceb28ffbe03f59d46e9ac8772 # master
+        with:
+          toolchain: stable
+          targets: wasm32-unknown-unknown
+      - uses: jetli/wasm-pack-action@0d096b08b4e5a7de8c28de67e11e945404e9eefa # v0.4.0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+      - name: Build and smoke
+        env:
+          AGTMLS_SPEC: ${{ github.workspace }}/.spec
+        run: |
+          wasm-pack build --target web --release --out-dir pkg
+          node scripts/smoke.mjs
+      - name: Tag must match Cargo.toml
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          CARGO=$(grep -m1 '^version = ' Cargo.toml | cut -d'"' -f2)
+          test "v${CARGO}" = "${GITHUB_REF_NAME}" || {
+            echo "::error::tag ${GITHUB_REF_NAME} does not match Cargo.toml ${CARGO}"
+            exit 1
+          }
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: pkg
+          path: pkg/
+
+  npm:
+    name: Publish to npmjs
+    needs: verify
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      # Mints the OIDC identity npm exchanges for a short-lived publish token,
+      # and is what makes `--provenance` possible at all.
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: pkg
+          path: pkg/
+
+      # Trusted publishing needs npm >= 11.5.1, and the npm bundled with a Node
+      # release lags well behind. Pin the CLI explicitly rather than inferring
+      # it from the Node version. package-manager-cache is off because a cached
+      # npm can shadow the version OIDC needs.
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
+      - name: Ensure an npm that can do OIDC
+        run: |
+          npm install -g npm@^11.5.1
+          npm --version
+
+      - name: Name the package
+        run: node scripts/prepare-package.mjs
+
+      - name: Publish (dry run)
+        if: inputs.dry_run
+        working-directory: pkg
+        run: npm publish --access public --dry-run
+
+      # With a trusted publisher configured for @agtmls/wasm on npmjs.com the
+      # CLI authenticates over OIDC and attaches provenance on its own.
+      - name: Publish with provenance
+        if: ${{ !inputs.dry_run }}
+        working-directory: pkg
+        run: npm publish --access public --provenance
