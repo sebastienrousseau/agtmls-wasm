@@ -12,6 +12,7 @@
 //! empty set. A WASM module that reports zero findings because it has no
 //! rules is indistinguishable, to its caller, from one that found nothing.
 
+use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 
 fn spec_dir() -> Option<PathBuf> {
@@ -96,7 +97,9 @@ fn main() {
         // large enough for any input is always wrong for most of them, and
         // clippy is right to say so.
         let hashes = "#".repeat(raw_hashes_needed(&body));
-        generated.push_str(&format!("    ({name:?}, r{hashes}\"{body}\"{hashes}),\n"));
+        // write! rather than push_str(&format!(..)): one allocation, and what
+        // clippy::format_push_string asks for.
+        let _ = writeln!(generated, "    ({name:?}, r{hashes}\"{body}\"{hashes}),");
     }
     generated.push_str("];\n");
 

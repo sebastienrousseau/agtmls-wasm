@@ -39,8 +39,16 @@ missing_docs = "warn"
 [lints.clippy]
 pedantic = { level = "warn", priority = -1 }
 
-# wasm-opt -Oz plus LTO and a single codegen unit: the size budget is 500 KB
-# gzipped and the analyzer is mostly regex, which is not small.
+# Explicit wasm-opt flags. wasm-pack prefers a wasm-opt already on PATH, and a
+# distribution build (homebrew binaryen, for one) can have bulk-memory disabled
+# while the Rust target emits memory.copy -- which fails validation with an
+# error that names the opcode rather than the missing feature. Stating the
+# features here makes the build behave the same whichever wasm-opt is found.
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ["-Oz", "--enable-bulk-memory", "--enable-nontrapping-float-to-int", "--enable-mutable-globals"]
+
+# -Oz plus LTO and a single codegen unit: the size budget is 500 KB gzipped and
+# the analyzer is mostly regex, which is not small.
 [profile.release]
 opt-level = "z"
 lto = true
