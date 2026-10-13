@@ -3,9 +3,9 @@
 
 [package]
 name = "agtmls-wasm"
-version = "0.0.2"
+version = "0.0.3"
 edition = "2024"
-rust-version = "1.86.0"
+rust-version = "1.89.0"
 license = "MIT OR Apache-2.0"
 description = "WebAssembly bindings for the AgtMLS engine: audit agent skills in a browser, with nothing leaving the page"
 repository = "https://github.com/sebastienrousseau/agtmls-wasm"
