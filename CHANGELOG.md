@@ -3,6 +3,24 @@
 
 # Changelog
 
+## [0.0.4] - 2026-11-15
+
+### Changed
+
+- The npm package is `@sebastienrousseau/agtmls-wasm`. It was named
+  `@agtmls/wasm`, but the `@agtmls` scope was never created on npm, so no
+  release could publish (v0.0.3's publish failed with 404). Install it with
+  `npm install @sebastienrousseau/agtmls-wasm`.
+
+### Fixed
+
+- CI and the release build pin wasm-pack v0.15.0. `jetli/wasm-pack-action`
+  resolved "latest" through an unauthenticated GitHub API call and, when
+  that was rate-limited, fell back to wasm-pack v0.9.1 (2020), whose bundled
+  `wasm-opt` rejected the module ("Only 1 table definition allowed in MVP",
+  then "Unknown option '--enable-multivalue'"), so builds passed or failed
+  by run.
+
 ## [0.0.3] - 2026-11-15
 
 ### Changed

@@ -6,7 +6,8 @@
  * Name the generated package for npm.
  *
  * wasm-pack writes a package.json named after the crate (`agtmls-wasm`). The
- * published package is `@agtmls/wasm`, and the generated file carries neither
+ * published package is `@sebastienrousseau/agtmls-wasm` (the maintainer's own npm
+ * scope; `@agtmls` was never created), and the generated file carries neither
  * the scope, the repository link, nor the licence files -- all of which npm
  * provenance and anyone auditing the package will look for.
  */
@@ -28,7 +29,7 @@ if (!version) {
 
 const manifest = JSON.parse(await readFile(path.join(PKG, "package.json"), "utf8"));
 Object.assign(manifest, {
-  name: "@agtmls/wasm",
+  name: "@sebastienrousseau/agtmls-wasm",
   version,
   description:
     "Audit agent skills in a browser, with nothing leaving the page. WebAssembly bindings for the AgtMLS engine.",
@@ -46,4 +47,4 @@ await writeFile(path.join(PKG, "package.json"), `${JSON.stringify(manifest, null
 for (const file of ["README.md", "LICENSE-APACHE", "LICENSE-MIT"]) {
   await copyFile(path.join(ROOT, file), path.join(PKG, file));
 }
-console.log(`OK: pkg/package.json is @agtmls/wasm@${version}`);
+console.log(`OK: pkg/package.json is @sebastienrousseau/agtmls-wasm@${version}`);
