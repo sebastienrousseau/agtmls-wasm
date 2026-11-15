@@ -9,4 +9,4 @@ authors:
 repository-code: "https://github.com/sebastienrousseau/agtmls-wasm"
 abstract: "WebAssembly bindings for the AgtMLS engine."
 license: "Apache-2.0 OR MIT"
-version: 0.0.2
+version: 0.0.3
