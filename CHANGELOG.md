@@ -3,6 +3,18 @@
 
 # Changelog
 
+## [0.0.5] - 2026-11-15
+
+### Changed
+
+- `agtmls-core` is the crates.io release `0.0.4`, an exact version, instead
+  of git revision `181d318`. It brings the core's analyzer and rule changes
+  since that revision into the module.
+- CI and the release workflow harden every runner (Harden-Runner, audit
+  mode) and no checkout keeps the job's credentials.
+- The first release published to npm by the release workflow through the
+  trusted publisher, with npm provenance; 0.0.4 was published by hand.
+
 ## [0.0.4] - 2026-11-15
 
 ### Changed
