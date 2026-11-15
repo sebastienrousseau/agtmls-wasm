@@ -3,6 +3,21 @@
 
 # Changelog
 
+## [0.0.6] - 2026-11-15
+
+### Changed
+
+- `agtmls-core` is the crates.io release `0.0.5`, an exact version,
+  instead of git revision `181d318`. The module now applies the core's
+  matching since that revision: NFKC folding and invisible-character
+  stripping, `applies_to` scoping, JSON escape decoding, the
+  AGT-STEG-001 emoji context and the tool table.
+- The rules are embedded as JSON, converted from the spec's TOML at build
+  time, and loaded with `RuleSet::from_json_sources`. The module no
+  longer links a TOML parser: it is 438 KB gzipped, against 502 KB with
+  TOML rules on the new core (budget 500 KB). NFKC's Unicode tables
+  account for most of the growth from 0.0.5's 419 KB.
+
 ## [0.0.5] - 2026-11-15
 
 ### Changed

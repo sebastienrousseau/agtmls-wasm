@@ -23,7 +23,7 @@ use wasm_bindgen::prelude::*;
 include!(concat!(env!("OUT_DIR"), "/embedded_rules.rs"));
 
 fn ruleset() -> Result<RuleSet, JsError> {
-    RuleSet::from_sources(EMBEDDED_RULES.iter().copied())
+    RuleSet::from_json_sources(EMBEDDED_RULES.iter().copied())
         .map_err(|error| JsError::new(&format!("embedded rule set failed to load: {error}")))
 }
 
@@ -85,7 +85,7 @@ pub fn audit_skill(files: JsValue) -> Result<JsValue, JsError> {
     for (path, content) in &map {
         findings.extend(analyzer.audit_str(path, content));
     }
-    findings.extend(skill::audit_skill(&map));
+    findings.extend(skill::audit_skill(&set, &map));
     serde_wasm_bindgen::to_value(&findings).map_err(|error| JsError::new(&error.to_string()))
 }
 
