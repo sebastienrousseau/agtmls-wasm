@@ -23,7 +23,7 @@ use wasm_bindgen::prelude::*;
 include!(concat!(env!("OUT_DIR"), "/embedded_rules.rs"));
 
 fn ruleset() -> Result<RuleSet, JsError> {
-    RuleSet::from_sources(EMBEDDED_RULES.iter().copied())
+    RuleSet::from_json_sources(EMBEDDED_RULES.iter().copied())
         .map_err(|error| JsError::new(&format!("embedded rule set failed to load: {error}")))
 }
 
