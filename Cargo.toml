@@ -9,7 +9,6 @@ rust-version = "1.89.0"
 license = "MIT OR Apache-2.0"
 description = "WebAssembly bindings for the AgtMLS engine: audit agent skills in a browser, with nothing leaving the page"
 repository = "https://github.com/sebastienrousseau/agtmls-wasm"
-homepage = "https://github.com/sebastienrousseau/agtmls-wasm"
 readme = "README.md"
 keywords = ["wasm", "agent", "skills", "security", "audit"]
 categories = ["wasm", "development-tools"]
