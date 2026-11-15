@@ -3,7 +3,7 @@
 
 [package]
 name = "agtmls-wasm"
-version = "0.0.3"
+version = "0.0.4"
 edition = "2024"
 rust-version = "1.89.0"
 license = "MIT OR Apache-2.0"
