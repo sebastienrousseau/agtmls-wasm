@@ -35,13 +35,13 @@ under Node with no Rust toolchain, no compilation and no per-OS builds.
 ## Install
 
 ```bash
-npm install @agtmls/wasm
+npm install @sebastienrousseau/agtmls-wasm
 ```
 
 ## Use
 
 ```js
-import init, { audit, audit_skill, skill_digest, rule_count } from "@agtmls/wasm";
+import init, { audit, audit_skill, skill_digest, rule_count } from "@sebastienrousseau/agtmls-wasm";
 
 await init();
 

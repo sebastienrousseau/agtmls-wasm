@@ -102,7 +102,7 @@ jobs:
         working-directory: pkg
         run: npm publish --access public --dry-run
 
-      # With a trusted publisher configured for @agtmls/wasm on npmjs.com the
+      # With a trusted publisher configured for @sebastienrousseau/agtmls-wasm on npmjs.com the
       # CLI authenticates over OIDC and attaches provenance on its own.
       - name: Publish with provenance
         if: ${{ !inputs.dry_run }}

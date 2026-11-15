@@ -3,6 +3,15 @@
 
 # Changelog
 
+## [0.0.4] - 2026-11-15
+
+### Changed
+
+- The npm package is `@sebastienrousseau/agtmls-wasm`. It was named
+  `@agtmls/wasm`, but the `@agtmls` scope was never created on npm, so no
+  release could publish (v0.0.3's publish failed with 404). Install it with
+  `npm install @sebastienrousseau/agtmls-wasm`.
+
 ## [0.0.3] - 2026-11-15
 
 ### Changed
