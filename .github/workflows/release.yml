@@ -35,6 +35,11 @@ jobs:
           toolchain: stable
           targets: wasm32-unknown-unknown
       - uses: jetli/wasm-pack-action@0d096b08b4e5a7de8c28de67e11e945404e9eefa # v0.4.0
+        # Pinned: "latest" is looked up through an unauthenticated API call,
+        # and when that is rate-limited the action falls back to wasm-pack
+        # v0.9.1 (2020), whose old wasm-opt fails on today's modules.
+        with:
+          version: v0.15.0
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "24"
