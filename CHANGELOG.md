@@ -3,6 +3,16 @@
 
 # Changelog
 
+## [0.0.35] - 2026-11-17
+
+**In lockstep with the AgtMLS family.** Every member of the family now
+releases at one version, so agtmls-wasm moves from 0.0.6 to 0.0.35.
+
+### Changed
+
+- `agtmls-core` pinned at `=0.0.35` (was `=0.0.5`), built against
+  agtmls-spec 0.0.35 (57 rules). No API change.
+
 ## [0.0.6] - 2026-11-15
 
 ### Changed
